@@ -1,18 +1,22 @@
 ---
 title: "Model Use and Explanation"
-author: "Clarissa, Desik, and Joe"
-date: "4/7/2022"
-output: html_document
+author: "Clarissa Boyajian, Desik Somasundaram, and Joe DeCesaro"
+date: "4/11/2022"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(patchwork)
+library(DT)
 
 source("function/yield_model.R")
 ```
 
+### Read in data
 
 ```{r}
 climdf<- read.table("data/clim.txt", sep = "",
@@ -20,6 +24,7 @@ climdf<- read.table("data/clim.txt", sep = "",
 ```
 
 
+### Computed Yield Anomaly
 
 ```{r, warning=FALSE}
 climdf_summary <- climdf %>% 
@@ -32,7 +37,20 @@ climdf_summary <- climdf %>%
                                      yearforyield = year,
                                      crop = "almond")
   )
+```
 
+
+
+### Explore Yield Data
+
+```{r, warning=FALSE}
+climdf_summary
+```
+
+
+### Plot Yield Data
+
+```{r}
 climdf_temp <- climdf %>% 
   filter(year != 1988, 
          month == 2) %>%
@@ -45,23 +63,29 @@ climdf_precip <- climdf %>%
          month == 1) %>%
   group_by(year, month) %>% 
   summarise(precip_mean = sum(precip))
-```
 
-```{r}
 plot_yield <- ggplot(climdf_summary) +
   geom_line(aes(x = year,
-                y = yield_anom))
+                y = yield_anom)) +
+  labs(x = "",
+       y = "",
+       title = "Yield Anomaly (tons / acre)")
 plot_precip <- ggplot(climdf_precip) +
   geom_line(aes(x = year,
                 y = precip_mean),
-            col = "blue")
+            col = "blue") +
+  labs(x = "",
+       y = "",
+       title = "Precipitation (mm) in Feb")
 plot_temp <- ggplot(climdf_temp) +
   geom_line(aes(x = year,
                 y = t_min),
-            col = "red")
+            col = "red") +
+  labs(x = "Year",
+       y = "",
+       title = "Min. Temp (C) in Jan")
 
 plot_yield / plot_precip / plot_temp
 ```
 
-
-
+The annual yield anomaly ranges from `r round(min(climdf_summary$yield_anom), 3)` to `r round(max(climdf_summary$yield_anom), 3)` tons/acre. Based on the outputs of our model, the annual yield anomaly for almonds is heavily dependent on the total February precipitation in mm. This can be observed in 1995, 2005, and 2008 with spikes in the annual yield anomaly and precipitation, but not in the minimum January temperature in C. In the future we would like to expand our analysis to other crops to how the trends compare. 
