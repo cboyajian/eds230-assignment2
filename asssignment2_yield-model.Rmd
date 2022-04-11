@@ -16,7 +16,14 @@ source("function/yield_model.R")
 
 ```{r}
 climdf<- read.table("data/clim.txt", sep = "",
-                                                                  na.strings ="", stringsAsFactors= F)
+                    na.strings ="", stringsAsFactors= F)
+```
+
+
+```{r}
+yield_model(climdf = climdf,
+            yearforyield = 1998,
+            crop = "almond")
 ```
 
 
@@ -24,13 +31,13 @@ climdf<- read.table("data/clim.txt", sep = "",
 climdf_summary <- climdf %>% 
   filter(year != 1988) %>% 
   group_by(year) %>% 
-  summarise(t_min=mean(tmin_c),
-            t_max=mean(tmax_c),
-            precip_mean=sum(precip),
+  summarise(t_min = mean(tmin_c),
+            t_max = mean(tmax_c),
+            precip_mean = sum(precip),
             yield_anom = yield_model(climdf,
-                                        yearforyield = year,
-                                        crop = "almond")
-            )
+                                     yearforyield = year,
+                                     crop = "almond")
+  )
 ```
 
 ```{r}
