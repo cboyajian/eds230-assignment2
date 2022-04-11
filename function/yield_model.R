@@ -1,11 +1,16 @@
 
 
-#' Title
-#'
-#' @return
+#' Crop Yield Model Based on Lobell et al. 2006
+#' @param climdf climate data frame with daily min temperature, max temperature and precipitation 
+#' @param yearforyield year to compute yield for
+#' @param crop crop of interest (choice of almonds and wine grapes currently)
+#' @return yield anomaly(tons/acre) for a given year
 #' @export
 #'
-#' @examples
+#' @examples 
+#' #Almond yield for 1998
+#' yield_model(climdf = climdf, yearforyield = 1998, crop = "almond")
+#' 
 yield_model <- function(climdf, yearforyield, crop, coeffvector=NULL){
   if(crop == "almond"){
   #wrangle dataframe  
