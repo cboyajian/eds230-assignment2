@@ -8,11 +8,12 @@
 #' @examples
 yield_model <- function(climdf, yearforyield, crop, coeffvector=NULL){
   if(crop == "almond"){
+  #wrangle dataframe  
   climdf_subset <- climdf %>% 
   filter(year==yearforyield) %>% 
   group_by(month) %>% 
   summarize(t_min=mean(tmin_c),t_max=mean(tmax_c),precip_mean=sum(precip))
-
+  #wrangle dataframe
   T_n2_subset <- climdf_subset %>% 
                  filter(month==2)
   T_n2 <- T_n2_subset[[2]]
@@ -30,7 +31,9 @@ yield_model <- function(climdf, yearforyield, crop, coeffvector=NULL){
               append(varvector, P_1) %>% 
               append(varvector, P_1^2) %>% 
               append(varvector, 1)
-  yield = coeffvector %*% varvector
+  #yield = coeffvector %*% varvector
+  #yield = as.numeric(yield)
+  yield = coeffvector[1]*T_n2 + coeffvector[2]*T_n2^2 + coeffvector[3]*P_1 + coeffvector[4]*P_1^2 + coeffvector[5]
   }
   else if(crop == "wine grapes"){
     climdf_subset <- climdf %>% 
@@ -64,7 +67,8 @@ yield_model <- function(climdf, yearforyield, crop, coeffvector=NULL){
     varvector <-append(varvector, P_9_prev)
     varvector <-append(varvector, P_9_prev^2)
     varvector <-append(varvector, 1)
-    yield = coeffvector %*% varvector
+    #yield = coeffvector %*% varvector
+    #yield = as.numeric(yield)
   }
   
 }
