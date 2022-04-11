@@ -20,12 +20,6 @@ climdf<- read.table("data/clim.txt", sep = "",
 ```
 
 
-```{r}
-yield_model(climdf = climdf,
-            yearforyield = 1998,
-            crop = "almond")
-```
-
 
 ```{r, warning=FALSE}
 climdf_summary <- climdf %>% 
@@ -38,18 +32,35 @@ climdf_summary <- climdf %>%
                                      yearforyield = year,
                                      crop = "almond")
   )
+
+climdf_temp <- climdf %>% 
+  filter(year != 1988, 
+         month == 2) %>%
+  group_by(year, month) %>% 
+  summarise(t_min = mean(tmin_c),
+            t_max = mean(tmax_c))
+
+climdf_precip <- climdf %>% 
+  filter(year != 1988, 
+         month == 1) %>%
+  group_by(year, month) %>% 
+  summarise(precip_mean = sum(precip))
 ```
 
 ```{r}
 plot_yield <- ggplot(climdf_summary) +
   geom_line(aes(x = year,
                 y = yield_anom))
-plot_precip <- ggplot(climdf_summary) +
+plot_precip <- ggplot(climdf_precip) +
   geom_line(aes(x = year,
                 y = precip_mean),
             col = "blue")
+plot_temp <- ggplot(climdf_temp) +
+  geom_line(aes(x = year,
+                y = t_min),
+            col = "red")
 
-plot_yield / plot_precip
+plot_yield / plot_precip / plot_temp
 ```
 
 
