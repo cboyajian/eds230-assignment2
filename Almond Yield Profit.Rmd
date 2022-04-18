@@ -48,11 +48,16 @@ climdf_summary <- climdf %>%
 ```{r, warning=FALSE}
 climdf_summary
 ```
-
+### Test Yield Profit
 
 ```{r}
-yld_profdf <- yield_profit(yield_df=climdf_summary, price_per_ton=10, opcost_per_acre=500)
+#Testing error messages
+#yld_profdf <- yield_profit(yield_df=climdf_summary, price_per_ton=10, opcost_per_acre=500)
+#yld_profdf <- yield_profit(yield_df=climdf_summary, price_per_ton=-10, opcost_per_acre=500)
+#yld_profdf <- yield_profit(yield_df=climdf_summary, price_per_ton=10, opcost_per_acre=-500)
+#yld_profdf <- yield_profit(yield_df=climdf, price_per_ton=10, opcost_per_acre=500)
 ```
+### Generate Parameters for Informal Sensitivity Analysis
 
 ```{r}
 deviation = 0.50
@@ -72,13 +77,16 @@ opcost_per_acre = runif(min=basealmondprice-deviation*basealmondprice,
 params_variability <- cbind.data.frame(price_per_ton,opcost_per_acre)
 ```
 
+
+### Generate results using parameters generated
+
 ```{r}
 results <- params_variability %>% 
             pmap(yield_profit,yield_df=climdf_summary)
 ```
 
 
-
+### Visualize parameters from sensitivity analysis
 
 ```{r}
 # now we can extract results from the list as above
@@ -90,18 +98,25 @@ mean_profit_anom = cbind.data.frame(mean_profit_anom, params_variability)
 
 p1 = ggplot(mean_profit_anom, aes(price_per_ton, mean, col=opcost_per_acre))+
   geom_point(cex=2)+
-  labs(y="Mean Profit Anomaly $/Acre", x="Price per Ton")
+  labs(y="Mean Profit Anomaly $/Acre", x="Price per Ton($)",
+       col="Operating Cost $/Acre") +
+  scale_color_viridis_c()
 p2 = ggplot(mean_profit_anom, aes(opcost_per_acre, mean, col=price_per_ton))+
   geom_point(cex=2)+
-  labs(y="Mean Profit Anomaly $/Acre", x="Operating Cost $/Acre")
+  labs(y="Mean Profit Anomaly $/Acre", x="Operating Cost $/Acre",
+       col="Price per Ton($)")+
+  scale_color_viridis_c()
 
-combined_plot <- ggarrange(p1,p2)
-
+combined_plot <- ggarrange(p1,p2) 
+combined_plot <- 
+  annotate_figure(combined_plot, 
+                  top = text_grob("Informal Sensitivity Analysis of Price and Operating Cost for Almond Profit Anomaly"))
+combined_plot
 ```
 
 
-```{r}
-
+```{r, eval=FALSE}
+ggsave("figs/sensitivity_almond_profit_anom.jpg",combined_plot, width = 10, height = 7)
 ```
 
 
